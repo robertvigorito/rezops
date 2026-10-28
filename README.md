@@ -16,11 +16,38 @@ Run the test suite:
 uv run pytest
 ```
 
-Run the command-line application:
+Run the Rez build command:
 
 ```sh
-uv run rezops
+uv run rezops-build --help
 ```
+
+## Rez build helper
+
+The `rezops-build` command copies `src/socket_dcc` into the Rez install root at
+`python/socket_dcc`. If `src/nuke` exists, it is copied to `nuke`; otherwise, any
+existing `nuke` target is removed. During a Rez build, the command reads
+`REZ_BUILD_SOURCE_PATH` and `REZ_BUILD_INSTALL_PATH` automatically. It uses
+`REZ_BUILD_PROJECT_NAME` as the package directory name, falling back to the
+normalized `[project].name` from `pyproject.toml` when that Rez variable is unset.
+Build progress logs use distinct colors for each severity when written to a terminal;
+color is disabled for redirected output and when `NO_COLOR` is set.
+
+```python
+# package.py for the package being built
+build_requires = ["rezops"]
+build_command = "rezops-build"
+```
+
+For local use, pass the roots explicitly:
+
+```sh
+uv run rezops-build --source-path /path/to/project --install-path /path/to/install
+```
+
+Use `--package-name` to select a different package directory under `src`.
+The package name can also be supplied positionally, for example
+`uv run rezops-build custom_package --source-path /path/to/project --install-path /path/to/install`.
 
 ## Documentation
 

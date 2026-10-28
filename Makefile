@@ -1,12 +1,11 @@
 package=rezops
 
-.PHONY: clean build clean-build clean-pyc clean-test docs docs-serve format lint check lint-check install poetry-install test test-all script coverage
+.PHONY: clean build clean-build clean-pyc clean-test docs docs-serve format lint check lint-check install sync test coverage
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
 build: clean
-	$(eval BUILD_LOCATION=./.build)
-	pip install . -t $(BUILD_LOCATION) --upgrade
+	uv build
 
 clean-build: ## remove build artifacts
 	rm -fr out/
@@ -37,44 +36,40 @@ clean-test: ## remove test and coverage artifacts
 docs: ## build the MkDocs documentation site
 	uv run mkdocs build
 
+
 docs-serve: ## preview documentation with live reload
 	uv run mkdocs serve
 
-
 format: ## apply safe Ruff fixes and format Python files
-	ruff check --fix .
-	ruff format .
-
+	uv run ruff check --fix .
+	uv run ruff format .
+	uv run black .
+	uv run isort --profile black .
 
 lint:
-	$(eval files=$(shell find ./src -type f -name "*.py"))
-	@isort --check-only --color $(files) --profile black || echo "isort failed"
-	@black --check $(files) || echo "black failed"
-	pylint --exit-zero $(files)
-	ruff check $(files)
-	mypy --ignore-missing-imports $(files)
+	uv run ruff check .
+	uv run black --check .
+	uv run isort --check-only --profile black .
+	uv run pylint --exit-zero src
+	uv run mypy --ignore-missing-imports src
+
 
 check:
-	@mypy ./src
+	uv run mypy src
 
 lint-check: lint check
 
 install: clean
-	pip install --upgrade .
+	uv sync --no-dev
 
-poetry-install: clean
-	poetry install
+sync: ## install or update the project environment and dependencies
+	uv sync
 
 test: ## run tests quickly with the default Python
-	$(MAKE) poetry-install
-	pytest ./tests
+	uv run pytest ./tests
 
-test-all: ## run tests on every Python version with tox
-	tox
 
-script:
-	$(eval SCRIPTS=$(shell find ./scripts -type f -name "*"))
-	@install -v -m 555 $(SCRIPTS) /software/scripts/
+coverage: ## create an HTML coverage report
+	uv run pytest ./tests
+	@echo "Coverage HTML report is available at htmlcov/index.html"
 
-coverage: ## check code coverage quickly with the default Python
-	wslview ./htmlcov/index.html
