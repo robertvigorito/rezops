@@ -2,17 +2,17 @@
 
 name = "rezops"
 version = "0.1.0"
-description = "Build Python packages for Rez package releases."
+description = "Contain code to help with rez operations."
 requires = []
 private_build_requires = []
 build_command = f"rezops-build {name}"
 
 
 def commands() -> bool:
-    """Add the installed Python package directory to Rez's Python path.
+    """Expose the generated package and optional Nuke tools in Rez.
 
     Returns:
-        True after adding the Python package directory to ``PYTHONPATH``.
+        bool: ``True`` after updating the Rez environment.
     """
     env.PYTHONPATH.append("{root}/python")  # noqa: F821 -- Rez injects ``env`` at runtime.
 

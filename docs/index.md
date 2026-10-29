@@ -1,6 +1,7 @@
 # rezops
 
-Build and install Python packages into Rez package releases with the `rezops-build` command.
+Utilities to support Rez workflows, including `rezops-build` for installing Python
+packages into Rez package releases.
 
 ## Install
 
