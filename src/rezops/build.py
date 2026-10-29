@@ -1,4 +1,4 @@
-"""Build and install generated Python packages into a Rez package release."""
+"""Build and install Python packages into Rez package releases."""
 
 import os
 from pathlib import Path
@@ -9,22 +9,20 @@ from rezops.logger import LOGGER, configure_logging
 import rezops.utils
 
 
-app = typer.Typer(help="Build and install a Python package into a Rez package release.")
+app = typer.Typer(help="Install a Python package into a Rez package release.")
 
 
 def build(
     package_name: str | None = None,
 ) -> bool:
-    """Install the generated package into the Rez install root.
+    """Install a Python package from the Rez source root into the install root.
 
     Args:
-        source_path: Project source root; defaults to REZ_BUILD_SOURCE_PATH.
-        install_path: Rez install root; defaults to REZ_BUILD_INSTALL_PATH.
-        package_name: Python package directory to install from src; defaults to
-            REZ_BUILD_PROJECT_NAME, then normalized [project].name in pyproject.toml.
+        package_name: Python package directory under ``src``; defaults to
+            ``REZ_BUILD_PROJECT_NAME``.
 
     Returns:
-        True after the package is installed.
+        True when the package is installed; False when required build inputs are missing.
     """
     rez_source_path = Path(os.getenv("REZ_BUILD_SOURCE_PATH", ""))
     rez_install_path = Path(os.getenv("REZ_BUILD_INSTALL_PATH", ""))
@@ -61,13 +59,14 @@ def build_command(
         help="Python package directory to install from src (defaults to REZ_BUILD_PROJECT_NAME or pyproject.toml).",
     ),
 ) -> None:
-    """Copy the generated Python package into the Rez install root.
+    """Install a Python package into the Rez install root.
 
     Args:
-        package_name: Python package directory to install from src (defaults to REZ_BUILD_PROJECT_NAME or pyproject.toml).
+        package_name: Python package directory under ``src``; defaults to
+            ``REZ_BUILD_PROJECT_NAME``.
 
     Returns:
-        None: Exits with a nonzero status and prints command options if the build fails.
+        None: Runs the package installation command.
     """
     configure_logging()
     build(package_name=package_name)
