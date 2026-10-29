@@ -1,7 +1,9 @@
 """Rez package definition for rezops."""
 
+import subprocess
+
 name = "rezops"
-version = "0.1.0"
+version = subprocess.check_output(["rezops-get-version"]).decode().strip()
 description = "Contain code to help with rez operations."
 requires = []
 private_build_requires = []

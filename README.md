@@ -49,6 +49,17 @@ Use `--package-name` to select a different package directory under `src`.
 The package name can also be supplied positionally, for example
 `uv run rezops-build custom_package --source-path /path/to/project --install-path /path/to/install`.
 
+The project also provides `rezops-get-version` and `rezops-get-requires` console commands.
+They read the project's `pyproject.toml` from `REZ_BUILD_SOURCE_PATH` (or the current
+directory), and can be pointed at another project explicitly:
+
+```sh
+rezops-get-version --source-path /path/to/project
+rezops-get-requires --source-path /path/to/project
+```
+
+The version script prints one version. The requires script prints one dependency per line.
+
 ## Documentation
 
 This project uses [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) with

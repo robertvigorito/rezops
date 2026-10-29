@@ -5,9 +5,8 @@ from pathlib import Path
 
 import typer
 
-from rezops.logger import LOGGER, configure_logging
 import rezops.utils
-
+from rezops.logger import LOGGER, configure_logging
 
 app = typer.Typer(help="Build and install a Python package into a Rez package release.")
 
@@ -64,7 +63,8 @@ def build_command(
     """Copy the generated Python package into the Rez install root.
 
     Args:
-        package_name: Python package directory to install from src (defaults to REZ_BUILD_PROJECT_NAME or pyproject.toml).
+        package_name: Python package directory to install from src
+        (defaults to REZ_BUILD_PROJECT_NAME or pyproject.toml).
 
     Returns:
         None: Exits with a nonzero status and prints command options if the build fails.

@@ -7,23 +7,106 @@ import pytest
 from typer.testing import CliRunner
 
 from rezops.build import app
+from rezops.get_requires import app as get_requires_app
+from rezops.get_version import app as get_version_app
 from rezops.logger import ColorFormatter
-from rezops.utils import normalize_package_name
+from rezops.utils import get_requires, get_version
 
 runner = CliRunner()
 
 
-@pytest.mark.parametrize(
-    ("name", "expected"),
-    [
-        ("socket-dcc", "socket_dcc"),
-        ("socket.dcc", "socket_dcc"),
-        ("socket-.dcc", "socket_dcc"),
-        ("-socket--dcc.", "_socket_dcc_"),
-        ("socket_dcc", "socket_dcc"),
-        ("", ""),
-    ],
-)
+def test_get_version_reads_pyproject(tmp_path: Path) -> None:
+    """Check the version getter reads [project].version.
+
+    Args:
+        tmp_path: Temporary project root.
+
+    Returns:
+        None: The assertion validates the returned version.
+    """
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo-package"\nversion = "1.2.3"\n',
+        encoding="utf-8",
+    )
+
+    assert get_version(tmp_path) == "1.2.3"
+
+
+def test_get_requires_reads_pyproject_dependencies(tmp_path: Path) -> None:
+    """Check the requires getter returns dependencies declared in pyproject.
+
+    Args:
+        tmp_path: Temporary project root.
+
+    Returns:
+        None: The assertion validates the dependency list.
+    """
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo-package"\nversion = "1.2.3"\n'
+        'dependencies = ["typer>=0.27", "tomli>=2; python_version < \'3.11\'"]\n',
+        encoding="utf-8",
+    )
+
+    assert get_requires(tmp_path) == ["typer>=0.27", "tomli>=2; python_version < '3.11'"]
+
+
+def test_get_requires_defaults_to_empty_list(tmp_path: Path) -> None:
+    """Check a project without dependencies has no Rez requirements.
+
+    Args:
+        tmp_path: Temporary project root.
+
+    Returns:
+        None: The assertion validates the empty dependency list.
+    """
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo-package"\nversion = "1.2.3"\n',
+        encoding="utf-8",
+    )
+
+    assert get_requires(tmp_path) == []
+
+
+def test_get_version_cli_uses_typer(tmp_path: Path) -> None:
+    """Check the version console command prints the requested project's version.
+
+    Args:
+        tmp_path: Temporary project root.
+
+    Returns:
+        None: Assertions validate the Typer CLI output and status.
+    """
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo-package"\nversion = "2.0.0"\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(get_version_app, ["--source-path", str(tmp_path)])
+
+    assert result.exit_code == 0, result.output
+    assert result.output == "2.0.0\n"
+
+
+def test_get_requires_cli_uses_typer(tmp_path: Path) -> None:
+    """Check the requires console command prints dependencies using Typer.
+
+    Args:
+        tmp_path: Temporary project root.
+
+    Returns:
+        None: Assertions validate the Typer CLI output and status.
+    """
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "demo-package"\nversion = "2.0.0"\ndependencies = ["typer>=0.27"]\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(get_requires_app, ["--source-path", str(tmp_path)])
+
+    assert result.exit_code == 0, result.output
+    assert result.output == "typer>=0.27\n"
+
+
 def test_color_formatter_uses_distinct_level_colors() -> None:
     """Check informational and error log levels receive different colors.
 

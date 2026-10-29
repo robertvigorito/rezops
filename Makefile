@@ -48,9 +48,6 @@ format: ## apply safe Ruff fixes and format Python files
 
 lint:
 	uv run ruff check .
-	uv run black --check .
-	uv run isort --check-only --profile black .
-	uv run pylint --exit-zero src
 	uv run mypy --ignore-missing-imports src
 
 

@@ -11,6 +11,8 @@ dependencies = [
 
 [project.scripts]
 rezops-build = "rezops.build:main"
+rezops-get-version = "rezops.get_version:main"
+rezops-get-requires = "rezops.get_requires:main"
 
 [build-system]
 requires = ["hatchling"]
