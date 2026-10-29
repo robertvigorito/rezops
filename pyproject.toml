@@ -1,7 +1,7 @@
 [project]
 name = "rezops"
 version = "0.1.1b1"
-description = "Contain code to help with rez operations."
+description = "Build Python packages for Rez package releases."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -45,4 +45,3 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
-

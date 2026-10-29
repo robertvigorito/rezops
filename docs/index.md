@@ -1,6 +1,6 @@
 # rezops
 
-Contain code to help with rez operations.
+Build and install Python packages into Rez package releases with the `rezops-build` command.
 
 ## Install
 
@@ -10,13 +10,19 @@ Install the package and its development tools:
 uv sync
 ```
 
-## Quick start
+## Rez build command
 
-Run the command-line application:
+During a Rez build, `rezops-build` reads `REZ_BUILD_SOURCE_PATH` and
+`REZ_BUILD_INSTALL_PATH` and installs `src/<package_name>` as
+`python/<package_name>` in the Rez install root. The package name defaults to
+`REZ_BUILD_PROJECT_NAME`, or can be supplied as a positional argument.
 
 ```sh
-uv run rezops
+uv run rezops-build --help
 ```
+
+Add `rezops` as a build requirement and configure `rezops-build <package_name>` as
+the package's `build_command` in `package.py`.
 ## Documentation development
 
 Preview the documentation locally with live reload:
