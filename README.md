@@ -1,6 +1,6 @@
 # rezops
 
-Contain code to help with rez operations.
+Build and install Python packages into Rez package releases with the `rezops-build` command.
 
 ## Getting started
 
@@ -22,32 +22,27 @@ Run the Rez build command:
 uv run rezops-build --help
 ```
 
-## Rez build helper
+## Rez build command
 
-The `rezops-build` command copies `src/socket_dcc` into the Rez install root at
-`python/socket_dcc`. If `src/nuke` exists, it is copied to `nuke`; otherwise, any
-existing `nuke` target is removed. During a Rez build, the command reads
-`REZ_BUILD_SOURCE_PATH` and `REZ_BUILD_INSTALL_PATH` automatically. It uses
-`REZ_BUILD_PROJECT_NAME` as the package directory name, falling back to the
-normalized `[project].name` from `pyproject.toml` when that Rez variable is unset.
-Build progress logs use distinct colors for each severity when written to a terminal;
-color is disabled for redirected output and when `NO_COLOR` is set.
+`rezops-build` installs a Python package from `src/<package_name>` in the project
+source root to `python/<package_name>` in the Rez install root. It reads
+`REZ_BUILD_SOURCE_PATH` and `REZ_BUILD_INSTALL_PATH` from the build environment and
+uses `REZ_BUILD_PROJECT_NAME` as the package name unless one is passed as an argument.
 
 ```python
 # package.py for the package being built
 build_requires = ["rezops"]
-build_command = "rezops-build"
+build_command = "rezops-build my_package"
 ```
 
-For local use, pass the roots explicitly:
+See the command options with:
 
 ```sh
-uv run rezops-build --source-path /path/to/project --install-path /path/to/install
+uv run rezops-build --help
 ```
 
-Use `--package-name` to select a different package directory under `src`.
 The package name can also be supplied positionally, for example
-`uv run rezops-build custom_package --source-path /path/to/project --install-path /path/to/install`.
+`uv run rezops-build custom_package`.
 
 The project also provides `rezops-get-version` and `rezops-get-requires` console commands.
 They read the project's `pyproject.toml` from `REZ_BUILD_SOURCE_PATH` (or the current
